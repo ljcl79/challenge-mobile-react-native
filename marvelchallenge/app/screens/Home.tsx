@@ -10,12 +10,14 @@ interface Props {}
 const Home: NavigationScreenComponent<null,  Props> = props => {
     const [marvelHeroes, setMarvelHeroes] = useState<Heroe[]>([]);
     const [page, setPage] = useState(0);
+    const [name, setName] = useState("");
     
     useEffect(() => {
         async function init() {
-            const response = await getHeroes(page);
+            const response = await getHeroes(page,name);
             const result = response.data;
             const heroes = result.results;
+            setName(name)
             setMarvelHeroes(heroes);
         }
         init();
@@ -27,7 +29,7 @@ const Home: NavigationScreenComponent<null,  Props> = props => {
 
         async function loadMoreHeroes() {
             const currentPage = page+1;
-            const response = await getHeroes(currentPage);
+            const response = await getHeroes(currentPage,name);
             const result = response.data;
             const heroes = marvelHeroes;
             marvelHeroes.push(...result.results);
@@ -54,7 +56,7 @@ const Home: NavigationScreenComponent<null,  Props> = props => {
                     </View>
                     <View style={styles.description}>
                         <Text style={styles.titulo}>{item.name}</Text>
-                        <Text style={styles.resumo}>{item.description}</Text>
+                        <Text style={styles.resumo}  ellipsizeMode={"tail"} numberOfLines={8}>{item.description}</Text>
                     </View>
                 </View>
             </View>    
@@ -83,6 +85,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
       },
       cardheroe : {
+        height: 200,
         flex:1,
         marginVertical: 5,
         marginHorizontal: 2,
@@ -100,18 +103,20 @@ const styles = StyleSheet.create({
         flex:1,
         flexDirection: 'column',
         padding: 10,
-        backgroundColor: "white"
-      },
+        backgroundColor: "white",
+        height: 140,
+    },
       titulo: {
         color: '#000000',
-        fontSize: 14,
+        fontSize: 18,
         fontFamily: 'OpenSans',
         fontWeight: 'bold',
       },
 
       resumo: {
+        marginTop: 10,
         color: '#000011',
-        fontSize: 12,
+        fontSize: 14,
         fontFamily: 'OpenSans'        
       },
 });
