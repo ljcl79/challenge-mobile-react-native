@@ -1,3 +1,6 @@
+/*
+  Definição de dados (Interface) 
+*/
 interface Thumbnail{
   extension: string;
   path: string;

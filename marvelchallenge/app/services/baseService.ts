@@ -1,3 +1,6 @@
+/*
+  Conexão com API da Marvel
+*/
 import axios from "axios";
 
 export const baseAPI = axios.create({

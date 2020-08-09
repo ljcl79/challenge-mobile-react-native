@@ -1,5 +1,7 @@
+/*
+  Arquivo responsavel da gestão dos dados do heroes a partir da API
+*/
 import { baseAPI, apiKey, apiPrivateKey } from "./baseService";
-import { logError } from "../utilities/errorUtils";
 import {Md5} from "md5-typescript";
 
 export const getHeroes = (page: number, nameStartsWith: string): Promise<IApiResponse> => {

@@ -1,3 +1,6 @@
+/*
+  HereoDetail Screen. Apresenta os detalhes do heroe, mesmo que a sua participação em series e comics
+*/
 import React, {useState, useEffect} from "react";
 import { Image, StyleSheet, Text, View, TouchableHighlight } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';

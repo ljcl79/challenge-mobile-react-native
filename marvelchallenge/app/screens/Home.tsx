@@ -1,3 +1,6 @@
+/*
+  Home Screen principal do app
+*/
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { FlatList  } from "react-native-gesture-handler";
@@ -30,7 +33,6 @@ const Home: NavigationScreenComponent<null,  Props> = props => {
         }, []);
 
     function onHeroePress(heroe: Heroe) {
-        console.log(heroe);
         props.navigation.navigate("heroDetail", { heroe });
     }
 
@@ -84,7 +86,6 @@ const Home: NavigationScreenComponent<null,  Props> = props => {
       }
   }
 
-    console.log(marvelHeroes);
     return (
     <View style={styles.viewStyle}>
       <View style={{flexDirection: 'row',}}>
