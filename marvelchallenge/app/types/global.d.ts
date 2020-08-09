@@ -9,7 +9,16 @@ interface Serie {
 }
 
 interface Series{
-  items: Series;
+  items: Serie[];
+}
+
+interface Comic {
+  name: string;
+  resourceURI: string;
+}
+
+interface Comics{
+  items: Comic[];
 }
 
 interface Heroe {
@@ -17,6 +26,8 @@ interface Heroe {
   name: string;
   thumbnail: Thumbnail;
   description: string;
+  series: Series;
+  comics: Comics;
 }
 
 interface Results {
@@ -27,3 +38,6 @@ interface IApiResponse {
     data: Results;
 }
 
+interface FavHeroe {
+  id: string
+}

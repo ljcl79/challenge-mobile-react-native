@@ -1,46 +1,107 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { FlatList  } from "react-native-gesture-handler";
-import { Image, Text } from "react-native-elements";
-import { getHeroes } from "../services/heroeService";
+import { Image, Text, SearchBar  } from "react-native-elements";
+import { getHeroes, getHeroeDetail } from "../services/heroeService";
 import { NavigationScreenComponent } from "react-navigation";
+import AsyncStorage from '@react-native-community/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Props {}
 
+let favHeroes: FavHeroe[];
+
 const Home: NavigationScreenComponent<null,  Props> = props => {
+    const [iconfav, setIconFav] = useState("heart-o");
     const [marvelHeroes, setMarvelHeroes] = useState<Heroe[]>([]);
     const [page, setPage] = useState(0);
     const [name, setName] = useState("");
+
     
     useEffect(() => {
         async function init() {
             const response = await getHeroes(page,name);
             const result = response.data;
             const heroes = result.results;
-            setName(name)
             setMarvelHeroes(heroes);
+            
         }
         init();
         }, []);
 
-        function onHeroePress(heroe: Heroe) {
-            props.navigation.navigate("heroDetail", { heroe });
-        }
+    function onHeroePress(heroe: Heroe) {
+        console.log(heroe);
+        props.navigation.navigate("heroDetail", { heroe });
+    }
 
-        async function loadMoreHeroes() {
-            const currentPage = page+1;
-            const response = await getHeroes(currentPage,name);
-            const result = response.data;
-            const heroes = marvelHeroes;
-            marvelHeroes.push(...result.results);
-            setMarvelHeroes(heroes);
-            setPage(currentPage);
-        }
+    async function loadMoreHeroes() {
+      if (iconfav == 'heart-o') {
+          const currentPage = page+1;
+          const response = await getHeroes(currentPage,name);
+          const result = response.data;
+          const heroes = marvelHeroes;
+          heroes.push(...result.results);
+          setMarvelHeroes(heroes);
+          setPage(currentPage);
+      }
+    }
 
-        console.log(marvelHeroes);
-        return (
-            
-        <FlatList
+    async function searchHeroes(text: string) {
+        setName(text);
+        const currentPage = 0;
+        const response = await getHeroes(currentPage,text);
+        const result = response.data;
+        const heroes = result.results;
+        setMarvelHeroes(heroes);
+        setPage(currentPage);
+        
+    }
+
+    async function showFavorities() {
+      if (iconfav == 'heart-o') {
+        const heroes = [];
+
+        const jsonValueI = await AsyncStorage.getItem('@favorites');
+        if (jsonValueI != null)
+            favHeroes = JSON.parse(jsonValueI!);
+        else
+            favHeroes = [];
+          
+        for(let i = 0; i < favHeroes.length; i++){
+          const response = await getHeroeDetail(favHeroes[i].id);
+          const result = response.data;
+          heroes.push(...result.results);
+        }
+        heroes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+        setMarvelHeroes(heroes);
+        setIconFav('heart');
+      } else {
+        const response = await getHeroes(page,name);
+        const result = response.data;
+        const heroes = result.results;
+        setMarvelHeroes(heroes);
+        setIconFav('heart-o');
+      }
+  }
+
+    console.log(marvelHeroes);
+    return (
+    <View style={styles.viewStyle}>
+      <View style={{flexDirection: 'row',}}>
+        <View style={{flex: 1}}>
+        <SearchBar
+        searchIcon={true}
+        containerStyle={{backgroundColor: 'red',borderBottomColor: 'transparent',borderTopColor: 'transparent'}}
+        onChangeText={text => searchHeroes(text)}
+        placeholder="Procurar..."
+        value={name}
+        />
+        </View>
+        <View style={{flex: 0.1, backgroundColor: 'red', paddingTop:20}}>
+          <Icon name={iconfav} size={30} color="yellow" onPress={() => showFavorities()}/>
+        </View>
+      </View>
+      <FlatList
             data={marvelHeroes}
             keyExtractor = { (item, index) => index.toString() }
             onEndReached={loadMoreHeroes}
@@ -63,13 +124,14 @@ const Home: NavigationScreenComponent<null,  Props> = props => {
             </TouchableOpacity>
             )}
         />
-        
-        );
+    </View>
+    
+    );
 }
 
 const styles = StyleSheet.create({
     image: {
-        height: 200,
+        height: 198,
         width: "100%",
         resizeMode: "cover"
       },
@@ -118,6 +180,12 @@ const styles = StyleSheet.create({
         color: '#000011',
         fontSize: 14,
         fontFamily: 'OpenSans'        
+      },
+      viewStyle: {
+        justifyContent: 'center',
+        flex: 1,
+        backgroundColor:'white',
+        marginTop: Platform.OS == 'ios'? 30 : 0
       },
 });
 

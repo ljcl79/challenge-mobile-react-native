@@ -30,13 +30,23 @@ export const getHeroes = (page: number, nameStartsWith: string): Promise<IApiRes
   return data;
 };
 
-export const favoriteHeroe = (heroeId: string): Promise<void> => {
-  return baseAPI
-    .get("set", {
-      data: {
-        
-      }
+export const getHeroeDetail = (id: string): Promise<IApiResponse> => {
+  const date = new Date();
+  const timestamp = date.getTime();
+  const hash = Md5.init(timestamp+apiPrivateKey+apiKey);
+  
+  let params = {
+    ts: timestamp,
+    apikey: apiKey,
+    hash
+  }
+
+  const data = baseAPI
+    .get("/characters/"+id, {
+      params
     })
-    .then(({ data }) => data)
-    .catch(error => logError("favoriteHeroe", error));
+    .then(({ data }) => data);
+  
+  return data;
 };
+
